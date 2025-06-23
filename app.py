@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 from textblob import TextBlob
 import nltk
+import os
+
+# Download NLTK data
+nltk.download('punkt')
 
 app = Flask(__name__)
-nltk.download('punkt')
 
 @app.route('/')
 def home():
@@ -11,7 +14,8 @@ def home():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    lines = request.json['text']
+    data = request.get_json()
+    lines = data.get('text', [])
     results = []
 
     for line in lines:
@@ -35,7 +39,6 @@ def analyze():
 
     return jsonify(results)
 
- if __name__ == '__main__':
+if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
